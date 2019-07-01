@@ -130,7 +130,7 @@ DisplayDevice::DisplayDevice(
     }
 
     // initialize the display orientation transform.
-    setProjection(DisplayState::eOrientationDefault, mViewport, mFrame);
+    setProjection(DisplayState::eOrientation90, mViewport, mFrame);
 }
 
 DisplayDevice::~DisplayDevice() {
@@ -426,6 +426,25 @@ void DisplayDevice::setProjection(int orientation,
     Rect viewport(newViewport);
     Rect frame(newFrame);
 
+#if 1  //flyzebra add  2019-07-01
+    int displayOrientation = DisplayState::eOrientationDefault;
+    char property[PROPERTY_VALUE_MAX];
+    if (mType == DISPLAY_PRIMARY) {
+        if (property_get("ro.sf.hwrotation", property, NULL) > 0) {
+            switch (atoi(property)) {
+            case 90:
+                displayOrientation = DisplayState::eOrientation90;
+                break;
+            case 270:
+                displayOrientation = DisplayState::eOrientation270;
+                break;
+            }
+        }
+    }
+
+    orientation = (orientation + displayOrientation) % 4;
+#endif
+
     const int w = mDisplayWidth;
     const int h = mDisplayHeight;
 
@@ -436,6 +455,15 @@ void DisplayDevice::setProjection(int orientation,
         // the destination frame can be invalid if it has never been set,
         // in that case we assume the whole display frame.
         frame = Rect(w, h);
+
+#if 1  //flyzebra add  2019-07-01
+        if (R.getOrientation() & Transform::ROT_90) {
+            // frame is always specified in the logical orientation
+            // of the display (ie: post-rotation).
+            swap(frame.right, frame.bottom);
+        }
+#endif
+
     }
 
     if (viewport.isEmpty()) {
