@@ -579,7 +579,7 @@ status_t SurfaceFlinger::getDisplayConfigs(const sp<IBinder>& display,
         //info.w = hwConfig.width;
         //info.h = hwConfig.height;
 
-#if 1   //flyzebra 2019-07-01
+#if 1   //flyzebra add 2019-07-01
         int width = hwConfig.width;
         int height = hwConfig.height;
 
@@ -603,7 +603,6 @@ status_t SurfaceFlinger::getDisplayConfigs(const sp<IBinder>& display,
         }
         info.w = width;
         info.h = height;
-
 #endif
 
         info.xdpi = xdpi;

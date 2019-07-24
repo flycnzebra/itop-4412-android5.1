@@ -2933,6 +2933,7 @@ void TouchInputMapper::dumpRawPointerAxes(String8& dump) {
 }
 
 void TouchInputMapper::configureSurface(nsecs_t when, bool* outResetNeeded) {
+	ALOGI("FLYZEBRA: configureSurface");
     int32_t oldDeviceMode = mDeviceMode;
 
     // Determine device mode.

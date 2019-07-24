@@ -1,0 +1,221 @@
+import init.itop4412.usb.rc
+
+on init
+    start watchdogd
+
+    # See storage config details at http://source.android.com/tech/storage/
+    mkdir /mnt/shell/emulated 0700 shell shell
+    mkdir /storage/emulated 0555 root root
+    mkdir /storage/sdcard0/.android_secure 0775 system system
+
+    mkdir /mnt/media_rw/sd_internal 0700 media_rw media_rw
+    mkdir /storage/sd_internal 0700 root root
+    mkdir /mnt/media_rw/sd_external 0700 media_rw media_rw
+    mkdir /storage/sd_external 0700 root root
+    mkdir /mnt/media_rw/usbdisk 0700 media_rw media_rw
+    mkdir /storage/usbdisk 0700 root root
+
+    export EXTERNAL_STORAGE /storage/emulated/legacy
+    export EMULATED_STORAGE_SOURCE /mnt/shell/emulated
+    export EMULATED_STORAGE_TARGET /storage/emulated
+    export SECONDARY_STORAGE /storage/sd_internal:/storage/sd_external:/storage/usbdisk
+
+    # Support legacy paths
+    symlink /storage/emulated/legacy /sdcard
+    symlink /storage/emulated/legacy /mnt/sdcard
+    symlink /storage/emulated/legacy /storage/sdcard0
+    symlink /mnt/shell/emulated/0 /storage/emulated/legacy
+
+
+on post-fs-data
+    mkdir /data/media 0770 media_rw media_rw
+    restorecon_recursive /data/media
+
+    setprop vold.post_fs_data_done 1
+    mkdir /data/misc/wifi 0770 wifi wifi
+    mkdir /data/misc/wifi/sockets 0770 wifi wifi
+    mkdir /data/misc/dhcp 0770 dhcp dhcp
+    chown dhcp dhcp /data/misc/dhcp
+
+on boot
+    insmod /system/lib/modules/nx_vpu.ko
+
+    # egl debugging
+    setprop debug.egl.callstack 1
+
+    # disable camera zsl 
+    setprop camera.disable_zsl_mode 1
+
+    # disable opengl preloading
+    setprop ro.zygote.disable_gl_preload 1
+
+    # for hwc
+    setprop hwc.scenario 2
+
+    # no tethering
+    setprop ro.tether.denied false
+
+    # no gps
+    setprop ro.gps.enabled false
+
+    # sd wakeup
+    setprop pm.sdwake.enabled true
+
+    # for ota
+    setprop otaupdater.otaid nexell_slsiap_s5p6818_drone_kk
+    setprop otaupdater.otaver 10000
+    setprop otaupdater.otatime 20140513-0800
+    setprop otaupdater.sdcard.os cache
+    setprop otaupdater.sdcard.recovery cache
+    # for nexell ota
+    setprop otaupdater.server http://210.219.52.221
+    setprop otaupdater.vendor NEXELL
+
+    # override init.rc to keep plenty of large order chunks around
+    # to improve allocation times
+    # write /proc/sys/vm/min_free_kbytes 32768
+    # write /proc/sys/vm/min_free_order_shift 1
+
+    mount debugfs /sys/kernel/debug /sys/kernel/debug
+    setprop ro.radio.noril no
+
+    # for cts android.os.cts.UsbDebuggingTest testUsbDebugging
+    setprop ro.adb.secure 0
+
+    # Reduce reserved lowmem from ~48MB to ~12MB
+    #write /proc/sys/vm/lowmem_reserve_ratio "128 128"
+
+    # Set up kernel tracing, but disable it by default
+    chmod 0222 /sys/kernel/debug/tracing/trace_marker
+    write /sys/kernel/debug/tracing/tracing_on 0
+
+    # for deinterlace (0:Disable, 1:BOB(SW), 2:BLEND(SW), 3:LINEAR(SW), 10:3D)
+    # setprop deinterlace.mode 0
+
+# Set vr power policy as Coarse demand
+#    write /sys/devices/platform/vr.0/power_policy coarse_demand
+
+on fs
+    mount_all /fstab.itop4412
+    setprop ro.crypto.fuse_sdcard true
+    insmod /system/lib/modules/vr.ko
+
+# Permissions for backlight
+    chmod 0660 /sys/class/backlight/pwm-backlight/brightness
+    chown system system /sys/class/backlight/pwm-backlight/brightness
+
+# Permissions for display sync
+    chown system system /sys/devices/platform/display/active.0
+    chown system system /sys/devices/platform/display/active.1
+
+#Permissions for serial add by cym 20150923
+    chmod 0666 /dev/ttySAC0
+    chmod 0666 /dev/ttySAC1
+#    chmod 0666 /dev/ttySAC2
+    chmod 0666 /dev/ttySAC3
+#end add
+
+#Permissions for RFID add by cym 20171114
+    chmod 0777 /dev/rc522
+    chmod 0777 /dev/leds_ctl
+    chmod 0777 /dev/buzzer_ctl
+    chmod 0777 /dev/relay_ctl
+    chmod 0777 /dev/max485_ctl_pin
+#end add
+
+# lowmem setting
+    write /sys/module/lowmemorykiller/parameters/minfree "12288,15360,18432,21504,24576,30720"
+
+# virtual sdcard daemon running as media_rw (1023)
+service sdcard /system/bin/sdcard -u 1023 -g 1023 -l /data/media /mnt/shell/emulated
+    class late_start
+
+# external storage
+service fuse_sd_internal /system/bin/sdcard -u 1023 -g 1023 -w 1023 \
+    -d /mnt/media_rw/sd_internal /storage/sd_internal
+    class late_start
+    disabled
+
+service fuse_sd_external /system/bin/sdcard -u 1023 -g 1023 -w 1023 \
+    -d /mnt/media_rw/sd_external /storage/sd_external
+    class late_start
+    disabled
+
+service fuse_usbdisk /system/bin/sdcard -u 1023 -g 1023 -w 1023 \
+    -d /mnt/media_rw/usbdisk /storage/usbdisk
+    class late_start
+    disabled
+
+# wifi
+service wpa_supplicant /system/bin/wpa_supplicant \
+    -iwlan0 -Dwext -c/data/misc/wifi/wpa_supplicant.conf \
+    -I/system/etc/wifi/wpa_supplicant_overlay.conf \
+    -e/data/misc/wifi/entropy.bin -g@android:wpa_wlan0
+    #   we will start as root and wpa_supplicant will switch to user wifi
+    #   after setting up the capabilities required for WEXT
+    #   user wifi
+    #   group wifi inet keystore
+    class main
+    socket wpa_wlan0 dgram 660 wifi wifi
+    disabled
+    oneshot
+
+service dhcpcd_wlan0 /system/bin/dhcpcd -aABDKL
+    class main
+    disabled
+    oneshot
+
+service iprenew_wlan0 /system/bin/dhcpcd -n
+    class main
+    disabled
+    oneshot
+
+# wifi-p2p
+service p2p_supplicant /system/bin/wpa_supplicant \
+    -iwlan0 -Dnl80211 -c/data/misc/wifi/wpa_supplicant.conf \
+    -I/system/etc/wifi/wpa_supplicant_overlay.conf -N \
+    -ip2p0 -Dnl80211 -c/data/misc/wifi/p2p_supplicant.conf \
+    -I/system/etc/wifi/p2p_supplicant_overlay.conf \
+    -puse_p2p_group_interface=1 \
+    -e/data/misc/wifi/entropy.bin -g@android:wpa_wlan0
+    #   we will start as root and wpa_supplicant will switch to user wifi
+    #   after setting up the capabilities required for WEXT
+    #   user wifi
+    #   group wifi inet keystore
+    class main
+    socket wpa_wlan0 dgram 660 wifi wifi
+    disabled
+    oneshot
+
+service dhcpcd_p2p /system/bin/dhcpcd -aABKL
+    class main
+    disabled
+    oneshot
+
+service iprenew_p2p /system/bin/dhcpcd -n
+    class main
+    disabled
+    oneshot
+
+# eth0
+service dhcpcd_eth0 /system/bin/dhcpcd -ABDKL
+    class main
+    disabled
+    oneshot
+
+service iprenew_eth0 /system/bin/dhcpcd -n
+    class main
+    disabled
+    oneshot
+
+# bt-pan
+service dhcpcd_bt-pan /system/bin/dhcpcd -aABDKL
+    class main
+    disabled
+    oneshot
+
+service iprenew_bt-pan /system/bin/dhcpcd -n
+    class main
+    disabled
+    oneshot
+
