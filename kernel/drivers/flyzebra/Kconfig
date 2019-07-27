@@ -1,0 +1,12 @@
+#
+# FlyZebra device configuration
+#
+
+menu "FlyZebra devices config"
+
+source "drivers/flyzebra/led/Kconfig"
+source "drivers/flyzebra/mediatek/Kconfig"
+source "drivers/flyzebra/zebra/Kconfig"
+
+endmenu
+

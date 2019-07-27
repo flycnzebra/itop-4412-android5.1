@@ -1,0 +1,7 @@
+config FLYZEBTA_LED_CTL
+        bool "flyzebra led config"
+        default n
+        help
+          flyzebra led config
+
+
