@@ -27,8 +27,8 @@ public class ZebraService extends IZebraService.Stub {
     protected void finalize() throws Throwable {
         finalize_native(mNativePointer);
         super.finalize();
-    }    
-    
+    }
+
     public String read(int maxLength) throws RemoteException
     {
         int length;
