@@ -1,5 +1,0 @@
-config FLYZEBRA_ZEBRA_CHAR
-    bool "flyzebra zebra-char"
-	default n
-    help
-      flyzebra zebra-char driver.

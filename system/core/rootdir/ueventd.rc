@@ -88,8 +88,6 @@ subsystem adf
 /dev/ppp                  0660   radio      vpn
 
 #add flyzebra 20190708
-/dev/flyzebra0            0666   root       root
-/dev/flyzebra1            0666   root       root
 /dev/flyzebra             0666   root       root
 #add end
 

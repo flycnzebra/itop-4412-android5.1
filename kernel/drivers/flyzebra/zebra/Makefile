@@ -1,1 +1,0 @@
-obj-$(CONFIG_FLYZEBRA_ZEBRA_CHAR)     += zebra-char.o
