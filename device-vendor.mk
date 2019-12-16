@@ -14,9 +14,19 @@ PRODUCT_COPY_FILES += \
 
 #Add busybox into system/bin
 PRODUCT_COPY_FILES += vendor/flyzebra/system/bin/busybox:system/bin/busybox
+#ratd so
+PRODUCT_COPY_FILES += vendor/flyzebra/system/lib/lib-mpd.so:system/lib/lib-mpd.so
 #enable adb connect 
 PRODUCT_PROPERTY_OVERRIDES += service.adb.tcp.port=5555
 
 # include product packages
-PRODUCT_PACKAGES += FileManager \
-					FlyLauncher \				
+PRODUCT_PACKAGES += FileManager 
+PRODUCT_PACKAGES += FlyLauncher 
+#PRODUCT_PACKAGES += com.google.android.gsf
+#PRODUCT_PACKAGES += com.google.android.gms
+#PRODUCT_PACKAGES += com.android.vending
+PRODUCT_PACKAGES += com.android.chrome
+PRODUCT_PACKAGES += FlyMPAPP
+PRODUCT_PACKAGES += ratd 
+PRODUCT_PACKAGES += GaodemapAuto 
+PRODUCT_PACKAGES += BaidumapAuto 

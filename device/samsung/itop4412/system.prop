@@ -1,0 +1,23 @@
+# system.prop for itop4412
+
+#rild.libpath=/system/lib/libreference-ril.so
+#rild.libargs=-d /dev/ttyS1
+
+ro.sf.auto_lcd_density=yes
+
+# hdmi support
+persist.demo.hdmirotationlock=1
+
+# disable strict mode
+persist.sys.strictmode.disable=1
+
+# WCDMA Preferred
+ro.telephony.default_network=0
+telephony.lteOnCdmaDevice=0
+ro.product.locale.language=zh
+ro.product.locale.region=CN
+# ro.use_data_netmgrd=true
+# persist.data_netmgrd_nint=8
+# ro.ril.def.agps.mode=0
+# keyguard.no_require_sim=true 
+ro.sf.hwrotation=270

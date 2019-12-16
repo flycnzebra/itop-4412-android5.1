@@ -1,0 +1,53 @@
+# wifi connection service
+type boardinit, domain;
+type boardinit_exec, exec_type, file_type;
+type eth_data_file, file_type, data_file_type;
+
+init_daemon_domain(boardinit)
+
+allow boardinit system_prop:property_service set;
+allow boardinit property_socket:sock_file write;
+unix_socket_connect(boardinit, property, init)
+
+allow boardinit self:capability {
+    dac_override
+    sys_module
+    chown
+};
+
+allow boardinit shell_exec:file rx_file_perms;
+allow boardinit boardinit_exec:file rx_file_perms;
+
+# Run helpers from / or /system without changing domain.
+allow boardinit rootfs:file execute_no_trans;
+allow boardinit system_file:file execute_no_trans;
+
+# Write /sys/power/wake_lock
+wakelock_use(boardinit)
+
+# Trigger module auto-load.
+allow boardinit kernel:system module_request;
+
+# Remote control
+allow boardinit sysfs:file rw_file_perms;
+allow boardinit input_device:dir r_dir_perms;
+allow boardinit input_device:chr_file rw_file_perms;
+
+# Ethernet
+allow boardinit system_data_file:dir rw_dir_perms;
+allow boardinit system_data_file:file create_file_perms;
+allow boardinit system_app_data_file:file getattr;
+allow boardinit eth_data_file:dir create_dir_perms;
+allow boardinit eth_data_file:file create_file_perms;
+allow system_app eth_data_file:dir create_dir_perms;
+allow system_app eth_data_file:file create_file_perms;
+allow dhcp eth_data_file:dir create_dir_perms;
+allow dhcp eth_data_file:file create_file_perms;
+allow dhcp system_prop:property_service set;
+allow dhcp net_radio_prop:property_service set;
+allow dhcp self:process execmem;
+
+# Access /dev/rfkill
+type rfkill_device, dev_type;
+allow wpa rfkill_device:chr_file rw_file_perms;
+

@@ -661,3 +661,9 @@ service pre-recovery /system/bin/uncrypt
     class main
     disabled
     oneshot
+
+#add flyzebra
+service ratd /system/bin/ratd
+    class main
+    socket socket_ratd stream 0666 system system
+

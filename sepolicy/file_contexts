@@ -1,0 +1,50 @@
+# GFX
+/dev/mali                               u:object_r:gpu_device:s0
+/dev/mali0                              u:object_r:gpu_device:s0
+/dev/ump                                u:object_r:gpu_device:s0
+/dev/fimg2d                             u:object_r:gpu_device:s0
+
+# HDMI
+/dev/HPD                                u:object_r:video_device:s0
+/dev/i2c-7                              u:object_r:video_device:s0
+
+# Media
+/dev/s3c-mfc                            u:object_r:video_device:s0
+/dev/s5p-mfc                            u:object_r:video_device:s0
+/dev/exynos-mem                         u:object_r:video_device:s0
+/dev/s5p-smem                           u:object_r:secmem_device:s0
+
+# ALP
+/dev/srp                                u:object_r:audio_device:s0
+
+# Sensors
+/dev/backlight-1wire                    u:object_r:sensors_device:s0
+
+# Console
+/dev/ttySAC0                            u:object_r:tty_device:s0
+
+# Wifi
+/dev/rfkill                             u:object_r:rfkill_device:s0
+
+# RIL
+#/dev/ttyUSB0                           u:object_r:radio_device:s0
+#/dev/ttyUSB1                           u:object_r:radio_device:s0
+#/dev/ttyUSB2                           u:object_r:radio_device:s0
+#/dev/ttyUSB3                           u:object_r:radio_device:s0
+
+# Bluetooth
+/dev/ttySAC1                            u:object_r:hci_attach_dev:s0
+
+# Firmwares
+#/system/vendor/firmware(/.*)?          u:object_r:firmware_camera:s0
+#/system/vendor/firmware/mfc_fw.bin     u:object_r:firmware_mfc:s0
+
+# DRM
+/data/app/tlcd_sock                     u:object_r:drmserver_socket:s0
+
+# Vendor
+/system/bin/sechdmiservice              u:object_r:surfaceflinger_exec:s0
+/sbin/tsd                               u:object_r:boardinit_exec:s0
+/sbin/tscal                             u:object_r:boardinit_exec:s0
+/data/ethernet(/.*)?                    u:object_r:eth_data_file:s0
+
