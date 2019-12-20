@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    android:sharedUserId="android.uid.system"
+    package="xinwei.com.mpapp">
+
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.INTERNET"/>
+
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:supportsRtl="true"
+        android:persistent="true"
+        android:theme="@android:style/Theme.Black">
+<!--        <activity android:netTypeName=".TestActivity">-->
+<!--            <intent-filter>-->
+<!--                <action android:netTypeName="android.intent.action.MAIN" />-->
+
+<!--                <category android:netTypeName="android.intent.category.LAUNCHER" />-->
+<!--            </intent-filter>-->
+<!--        </activity>-->
+<!--        <service android:netTypeName=".BaseMainService"/>-->
+
+        <service android:name="xinwei.com.mpapp.MainService"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter android:priority="-700">
+                <action android:name="xinwei.com.mpapp.service.MpcService" />
+            </intent-filter>
+
+        </service>
+
+       <receiver android:name="xinwei.com.mpapp.BootBroadcastReceiver">
+<!--           <intent-filter>-->
+<!--               <action android:netTypeName="android.intent.action.BOOT_COMPLETED"></action>-->
+<!--           </intent-filter>-->
+
+            <intent-filter>
+               <action android:name="android.intent.action.PACKAGE_REPLACED" />
+               <data android:scheme="package" />
+           </intent-filter>
+       </receiver>
+
+    </application>
+
+</manifest>
