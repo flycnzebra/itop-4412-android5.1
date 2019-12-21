@@ -7265,7 +7265,6 @@ package android.content {
     field public static final java.lang.String NFC_SERVICE = "nfc";
     field public static final java.lang.String NOTIFICATION_SERVICE = "notification";
     field public static final java.lang.String NSD_SERVICE = "servicediscovery";
-    field public static final java.lang.String ZEBRA_SERVICE = "zebra";
     field public static final java.lang.String POWER_SERVICE = "power";
     field public static final java.lang.String PRINT_SERVICE = "print";
     field public static final java.lang.String RESTRICTIONS_SERVICE = "restrictions";
@@ -7286,6 +7285,7 @@ package android.content {
     field public static final java.lang.String WIFI_P2P_SERVICE = "wifip2p";
     field public static final java.lang.String WIFI_SERVICE = "wifi";
     field public static final java.lang.String WINDOW_SERVICE = "window";
+    field public static final java.lang.String ZEBRA_SERVICE = "zebra";
   }
 
   public class ContextWrapper extends android.content.Context {
@@ -16949,6 +16949,7 @@ package android.net {
     field public static final java.lang.String EXTRA_OTHER_NETWORK_INFO = "otherNetwork";
     field public static final java.lang.String EXTRA_REASON = "reason";
     field public static final int TYPE_BLUETOOTH = 7; // 0x7
+    field public static final int TYPE_CTOOLVPN = 18; // 0x12
     field public static final int TYPE_DUMMY = 8; // 0x8
     field public static final int TYPE_ETHERNET = 9; // 0x9
     field public static final int TYPE_MOBILE = 0; // 0x0
@@ -21274,27 +21275,6 @@ package android.opengl {
     method public static void computeBoundingSphere(float[], int, int, float[], int);
     method public static int frustumCullSpheres(float[], int, float[], int, int, int[], int, int);
     method public static int visibilityTest(float[], int, float[], int, char[], int, int);
-  }
-
-}
-
-package android.zebra {
-
-  public abstract interface IZebraService implements android.os.IInterface {
-    method public abstract int write(java.lang.String) throws android.os.RemoteException;
-  }
-
-  public static abstract class IZebraService.Stub extends android.os.Binder implements android.zebra.IZebraService {
-    ctor public IZebraService.Stub();
-    method public android.os.IBinder asBinder();
-    method public static android.zebra.IZebraService asInterface(android.os.IBinder);
-    method public boolean onTransact(int, android.os.Parcel, android.os.Parcel, int) throws android.os.RemoteException;
-  }
-
-  public class ZebraManager {
-    ctor public ZebraManager(android.content.Context, android.zebra.IZebraService);
-    method public java.lang.String read(int);
-    method public int write(java.lang.String);
   }
 
 }
@@ -39210,6 +39190,27 @@ package android.widget {
     method public void setOnZoomOutClickListener(android.view.View.OnClickListener);
     method public void setZoomSpeed(long);
     method public void show();
+  }
+
+}
+
+package android.zebra {
+
+  public abstract interface IZebraService implements android.os.IInterface {
+    method public abstract int write(java.lang.String) throws android.os.RemoteException;
+  }
+
+  public static abstract class IZebraService.Stub extends android.os.Binder implements android.zebra.IZebraService {
+    ctor public IZebraService.Stub();
+    method public android.os.IBinder asBinder();
+    method public static android.zebra.IZebraService asInterface(android.os.IBinder);
+    method public boolean onTransact(int, android.os.Parcel, android.os.Parcel, int) throws android.os.RemoteException;
+  }
+
+  public class ZebraManager {
+    ctor public ZebraManager(android.content.Context, android.zebra.IZebraService);
+    method public java.lang.String read(int);
+    method public int write(java.lang.String);
   }
 
 }

@@ -2921,7 +2921,7 @@ public abstract class Context {
 	//flyzebra add 20190726
 	/**
      * Use with {@link #getSystemService} to retrieve a
-     * {@link android.zebra.OpersysManager} for using Opersys Service.
+     * {@link android.zebra.ZebraManager} for using zebra Service.
      *
      * @see #getSystemService
      */

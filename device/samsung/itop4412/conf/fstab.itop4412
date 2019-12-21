@@ -8,7 +8,6 @@
 /dev/block/mmcblk0p3    /data          ext4      noatime,nosuid,nodev,nomblk_io_submit,noauto_da_alloc,errors=panic    wait,check
 
 # vold-managed volumes ("block device" is actually a sysfs devpath)
-/devices/platform/dw_mmc/mmc_host/mmc0/*		 auto  vfat  defaults  voldmanaged=sdcard0:auto,noemulatedsd
-/devices/platform/dw_mmc/mmc_host/mmc0/*         auto  vfat  defaults  voldmanaged=sd_internal:1
-/devices/platform/s3c-sdhci.2/mmc_host/mmc1/*    auto  auto  defaults  voldmanaged=sd_external:auto
+/devices/platform/dw_mmc/mmc_host/mmc0/*         auto  vfat  defaults  voldmanaged=sdcard0:1
+/devices/platform/s3c-sdhci.2/mmc_host/mmc1/*    auto  auto  defaults  voldmanaged=sdcard1:auto
 /devices/platform/s5p-ehci/*                     auto  auto  defaults  voldmanaged=usbdisk:auto

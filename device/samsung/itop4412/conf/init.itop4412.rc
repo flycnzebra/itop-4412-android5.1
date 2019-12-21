@@ -10,21 +10,21 @@ on init
     #mkdir /mnt/media_rw/sdcard0 0700 media_rw media_rw
     #mkdir /storage/sdcard0 0700 root root    
 
-    mkdir /mnt/media_rw/sd_internal 0700 media_rw media_rw
-    mkdir /storage/sd_internal 0700 root root
-    mkdir /mnt/media_rw/sd_external 0700 media_rw media_rw
-    mkdir /storage/sd_external 0700 root root
+    mkdir /mnt/media_rw/sdcard0 0700 media_rw media_rw
+    mkdir /storage/sdcard0 0700 root root
+    mkdir /mnt/media_rw/sdcard1 0700 media_rw media_rw
+    mkdir /storage/sdcard1 0700 root root
     mkdir /mnt/media_rw/usbdisk 0700 media_rw media_rw
     mkdir /storage/usbdisk 0700 root root
 	
-    export EXTERNAL_STORAGE /storage/sd_internal
+    export EXTERNAL_STORAGE /storage/sdcard0
     #export EMULATED_STORAGE_SOURCE /mnt/media_rw/sd_internal
     #export EMULATED_STORAGE_TARGET /storage/sd_internal
-    export SECONDARY_STORAGE /storage/sd_external:/storage/usbdisk
+    export SECONDARY_STORAGE /storage/sdcard1:/storage/usbdisk
 
     # Support legacy paths
-    symlink /storage/sd_internal /sdcard
-    symlink /storage/sd_internal /storage/emulated/0
+    symlink /storage/sdcard0 /sdcard
+    symlink /storage/sdcard0 /storage/emulated/0
 
 
 on post-fs-data
@@ -131,15 +131,11 @@ on fs
 #    class late_start
 
 # external storage
-service fuse_sd_internal /system/bin/sdcard -u 1023 -g 1023 -w 1023 -d /mnt/media_rw/sd_internal /storage/sd_internal
+service fuse_sdcard0 /system/bin/sdcard -u 1023 -g 1023 -d /mnt/media_rw/sdcard0 /storage/sdcard0
     class late_start
     disabled
-	
-#service fuse_sdcard0 /system/bin/sdcard -u 1023 -g 1023 -d /mnt/media_rw/sdcard0 /storage/sdcard0
-#    class late_start
-#    disabled
 
-service fuse_sd_external /system/bin/sdcard -u 1023 -g 1023 -w 1023 -d /mnt/media_rw/sd_external /storage/sd_external
+service fuse_sd_sdcard1 /system/bin/sdcard -u 1023 -g 1023 -w 1023 -d /mnt/media_rw/sdcard1 /storage/sdcard1
     class late_start
     disabled
 
