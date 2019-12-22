@@ -25,7 +25,6 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.RemoteException;
-import android.os.SystemProperties;
 import android.os.UserHandle;
 import android.provider.Settings;
 import android.util.Log;
@@ -141,14 +140,7 @@ public final class RotationPolicy {
                 try {
                     IWindowManager wm = WindowManagerGlobal.getWindowManagerService();
                     if (enabled) {
-                        //Consider input rotation parameter even if display panel is mounted
-                        //with 90 or 180 or 270 degrees rotated.
-                        if (rotation < 0) {
-                            wm.freezeRotation(rotation);
-                        } else {
-                            wm.freezeRotation(SystemProperties.getInt(
-                                    "ro.sf.hwrotation", 0)/90);
-                        }
+                        wm.freezeRotation(rotation);
                     } else {
                         wm.thawRotation();
                     }
