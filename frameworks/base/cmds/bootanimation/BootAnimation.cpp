@@ -240,7 +240,7 @@ status_t BootAnimation::readyToRun() {
 	char value[PROPERTY_VALUE_MAX];
     property_get("ro.sf.hwrotation", value, "0");
     int orient = atoi(value)/90;
-    if (orient == eOrientation90 || orient == eOrientation270) {
+    if (orient == 1 || orient == 3) {
         int temp = dinfo.h;
         dinfo.h = dinfo.w;
         dinfo.w = temp;

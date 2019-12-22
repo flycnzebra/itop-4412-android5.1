@@ -93,9 +93,9 @@ public class MpcController {
                 if (socketClient != null) {
                     String mag = SystemPropTools.get("persist.sys.mag.ip","210.12.248.82");;
                     String dns = SystemPropTools.get("persist.sys.mag.dns","202.106.0.20");
-                    String strUid = (SystemPropTools.get("persist.radio.mcwill.pid","ffffffff")).replace(".","").trim();
+                    String strUid = (SystemPropTools.get("persist.radio.mcwill.pid","00004659")).replace(".","").trim();
                     while (strUid.equals("ffffffff") || strUid.equals("00000000")){
-                        FlyLog.e("read system prop uid error, sleel 1000 millis and try again.");
+                        FlyLog.e("read system prop uid error, sleep 1000 millis and try again.");
                         try {
                             Thread.sleep(1000);
                         } catch (InterruptedException e) {
