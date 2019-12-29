@@ -237,6 +237,10 @@ status_t BootAnimation::readyToRun() {
     if (status)
         return -1;
 
+    //property_get("ro.sf.hwrotation", value, "0");
+    Rect destRect(dinfo.w, dinfo.h);
+    mSession->setDisplayProjection(dtoken, 0, destRect, destRect);
+
     // create the native surface
     sp<SurfaceControl> control = session()->createSurface(String8("BootAnimation"),
             dinfo.w, dinfo.h, PIXEL_FORMAT_RGB_565);
