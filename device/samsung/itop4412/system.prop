@@ -21,3 +21,8 @@ ro.product.locale.region=CN
 # ro.ril.def.agps.mode=0
 # keyguard.no_require_sim=true 
 ro.sf.hwrotation=270
+
+persist.sys.mag.ip=103.5.126.153
+persist.sys.mag.dns=172.16.251.77
+persist.radio.mcwill.pid=89.55.67.72
+

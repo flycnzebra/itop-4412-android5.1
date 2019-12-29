@@ -350,6 +350,7 @@
         <item>5</item>
         <item>7</item>
         <item>9</item>
+		<item>19</item>
     </integer-array>
 
     <!-- If the DUN connection for this CDMA device supports more than just DUN -->

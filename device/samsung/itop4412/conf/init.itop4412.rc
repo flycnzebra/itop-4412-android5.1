@@ -24,6 +24,7 @@ on init
 
     # Support legacy paths
     symlink /storage/sdcard0 /sdcard
+    symlink /storage/sdcard0 /mnt/sdcard
     symlink /storage/sdcard0 /storage/emulated/0
 
 
@@ -153,3 +154,8 @@ service iprenew_eth0 /system/bin/dhcpcd -n
     class main
     disabled
     oneshot
+	
+# audio 
+tinymix 4 127
+tinymix 39 1
+tinymix 42 1

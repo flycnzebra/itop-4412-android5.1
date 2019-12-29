@@ -34,6 +34,7 @@ import java.util.List;
 /**
  * create By tangshiyuan 20191024
  * add tun0 vpn network agent
+ *
  * @hide
  */
 public class CootelVpn {
@@ -95,7 +96,7 @@ public class CootelVpn {
 
     private void onUserAdded(int userHandle) {
         // If the user is restricted tie them to the owner's VPN
-        synchronized(CootelVpn.this) {
+        synchronized (CootelVpn.this) {
             UserManager mgr = UserManager.get(mContext);
             UserInfo user = mgr.getUserInfo(userHandle);
             if (user.isRestricted()) {
@@ -117,13 +118,13 @@ public class CootelVpn {
         if (mVpnUsers == null) {
             throw new IllegalStateException("VPN is not active");
         }
-            // Add all UIDs for the user.
+        // Add all UIDs for the user.
         mVpnUsers.add(UidRange.createForUser(userHandle));
     }
 
     private void onUserRemoved(int userHandle) {
         // clean up if restricted
-        synchronized(CootelVpn.this) {
+        synchronized (CootelVpn.this) {
             UserManager mgr = UserManager.get(mContext);
             UserInfo user = mgr.getUserInfo(userHandle);
             if (user.isRestricted()) {
@@ -161,8 +162,8 @@ public class CootelVpn {
     }
 
     public synchronized void agentConnect() {
-        if(mNetworkAgent!=null) {
-            Log.d(TAG,"tsylog cootelvpn network is already create.");
+        if (mNetworkAgent != null) {
+            Log.d(TAG, "tsylog cootelvpn network is already create.");
             return;
         }
         mInterface = "tun0";
@@ -172,10 +173,10 @@ public class CootelVpn {
         try {
 //            lp.addRoute(new RouteInfo(new IpPrefix(InetAddress.getByName("::"), Integer.parseInt("0")), null));
             lp.addRoute(new RouteInfo(new IpPrefix(InetAddress.getByName("0.0.0.0"), Integer.parseInt("0")), null));
-            String dns = SystemProperties.get("persist.sys.mag.dns","172.16.251.77");
+            String dns = SystemProperties.get("persist.sys.mag.dns", "172.16.251.77");
             lp.addDnsServer(InetAddress.getByName(dns));
-        }catch (Exception e){
-            Log.e(TAG,"tsylog init route and dns server error"+e.toString());
+        } catch (Exception e) {
+            Log.e(TAG, "tsylog init route and dns server error" + e.toString());
         }
 //        lp.setDomains(buffer.toString().trim());
 
@@ -216,14 +217,17 @@ public class CootelVpn {
 
     }
 
-    private synchronized void agentDisconnect() {
-        mNetworkInfo.setIsAvailable(false);
-        mNetworkInfo.setDetailedState(DetailedState.DISCONNECTED, null, null);
+    public synchronized void agentDisconnect() {
+        mInterface = null;
+        if (mNetworkInfo != null) {
+            mNetworkInfo.setIsAvailable(false);
+            mNetworkInfo.setDetailedState(DetailedState.DISCONNECTED, null, null);
+        }
         if (mNetworkAgent != null) {
             mNetworkAgent.sendNetworkInfo(mNetworkInfo);
+            mNetworkAgent = null;
+            Log.d(TAG, "tsylog cootelvpn network is destroy!");
         }
-        mNetworkAgent = null;
-        Log.d(TAG,"tsylog cootelvpn network is destroy!");
     }
 
     private INetworkManagementEventObserver mObserver = new BaseNetworkObserver() {
@@ -243,10 +247,10 @@ public class CootelVpn {
         public void interfaceRemoved(String interfaze) {
             Log.d(TAG, "tsylog interfaceRemoved " + interfaze);
             synchronized (CootelVpn.this) {
-                if (interfaze.equals(mInterface)) {
-                    mInterface = null;
-                    agentDisconnect();
-                }
+//                if (interfaze.equals(mInterface)) {
+//                    mInterface = null;
+//                    agentDisconnect();
+//                }
             }
         }
     };

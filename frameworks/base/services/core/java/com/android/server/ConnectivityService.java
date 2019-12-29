@@ -141,7 +141,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+import com.android.server.connectivity.CootelVpn;
 
 /**
  * @hide
@@ -201,6 +203,9 @@ public class ConnectivityService extends IConnectivityManager.Stub
 
     @GuardedBy("mVpns")
     private final SparseArray<Vpn> mVpns = new SparseArray<Vpn>();
+
+    @GuardedBy("mCootelVpns")
+    private final SparseArray<CootelVpn> mCootelVpns = new SparseArray<CootelVpn>();
 
     private boolean mLockdownEnabled;
     private LockdownVpnTracker mLockdownTracker;
@@ -1566,6 +1571,13 @@ public class ConnectivityService extends IConnectivityManager.Stub
         mHandler.sendMessage(mHandler.obtainMessage(EVENT_SYSTEM_READY));
 
         mPermissionMonitor.startMonitoring();
+
+        /**add by tangshiyuan 20191012开启多流关闭多流状态各网络DNS修改 start**/
+        Slog.d(TAG, "tsylog tun0 receive cregisterReceiver");
+        final IntentFilter tun0Filter = new IntentFilter();
+        tun0Filter.addAction("intent.action.UPDATE_MP_STATUS_FOR_LINK_MANAGER");
+        mContext.registerReceiver(mTun0Receiver, tun0Filter);
+        /**add by tangshiyuan 20191012开启多流关闭多流状态各网络DNS修改 end**/
     }
 
     private BroadcastReceiver mUserPresentReceiver = new BroadcastReceiver() {
@@ -3364,6 +3376,16 @@ public class ConnectivityService extends IConnectivityManager.Stub
             userVpn = new Vpn(mHandler.getLooper(), mContext, mNetd, this, userId);
             mVpns.put(userId, userVpn);
         }
+
+        synchronized(mCootelVpns) {
+            CootelVpn userCootelVpn = mCootelVpns.get(userId);
+            if (userCootelVpn != null) {
+                loge("Starting user already has a VPN");
+                return;
+            }
+            userCootelVpn = new CootelVpn(mHandler.getLooper(), mContext, mNetd, userId);
+            mCootelVpns.put(userId, userCootelVpn);
+        }
     }
 
     private void onUserStop(int userId) {
@@ -4009,7 +4031,11 @@ public class ConnectivityService extends IConnectivityManager.Stub
             loge("Dead network still had at least " + nr);
             break;
         }
-        nai.asyncChannel.disconnect();
+
+        //disable this wifi and vpn and 4g can keep all open
+        if(!isOpenVpn.get()){
+            nai.asyncChannel.disconnect();
+        }
     }
 
     private void handleLingerComplete(NetworkAgentInfo oldNetwork) {
@@ -4517,4 +4543,118 @@ public class ConnectivityService extends IConnectivityManager.Stub
             return mVpns.get(user).setUnderlyingNetworks(networks);
         }
     }
+
+    /**add by tangshiyuan 20191012开启多流关闭多流状态各网络DNS修改 start**/
+    private int wifi_tun0_status = 0;
+    private int mcwill_tun0_status = 0;
+    private int mobile_tun0_status = 0;
+    private Collection<InetAddress> mobile_default_dnss = new ArrayList<InetAddress>();
+    private Collection<InetAddress> wifi_default_dnss = new ArrayList<InetAddress>();
+    private Collection<InetAddress> mcwill_default_dnss = new ArrayList<InetAddress>();
+    public static final String net_support_multi = "persist.sys.net.support.multi";
+    private AtomicBoolean isOpenVpn = new AtomicBoolean(false);
+
+    private BroadcastReceiver mTun0Receiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+//            Slog.d(TAG, "tsylog receive connect intent:" + intent.toUri(0));
+            try {
+                if ("intent.action.UPDATE_MP_STATUS_FOR_LINK_MANAGER".endsWith(intent.getAction())) {
+                    int wifitun0 = intent.getIntExtra("NETWORK_LINK_WIFI", 0);
+                    int mobiletun0 = intent.getIntExtra("NETWORK_LINK_4G", 0);
+                    int mcwilltun0 = intent.getIntExtra("NETWORK_LINK_MCWILL", 0);
+//                    Network networks[] = getAllNetworks();
+//                    for (Network network : networks) {
+//                        NetworkAgentInfo networkAgentInfo = getNetworkAgentInfoForNetwork(network);
+//                        if (networkAgentInfo == null) {
+//                            //TODO:Why getNetworkAgentInfoForNetwork return null?
+//                            Slog.e(TAG, "tsylog getNetworkAgentInfoForNetwork=null");
+//                            break;
+//                        }
+//                        switch (networkAgentInfo.networkInfo.getType()) {
+//                            case ConnectivityManager.TYPE_MOBILE:
+//                                if (mobile_tun0_status != mobiletun0) {
+//                                    setNetwokrDNSforTun(networkAgentInfo, mobiletun0 == 1);
+//                                }
+//                                break;
+//                            case ConnectivityManager.TYPE_WIFI:
+//                                if (wifi_tun0_status != wifitun0) {
+//                                    setNetwokrDNSforTun(networkAgentInfo, wifitun0 == 1);
+//                                }
+//                                break;
+//                            case ConnectivityManager.TYPE_ETHERNET:
+//                                if (mcwill_tun0_status != mcwilltun0) {
+//                                    setNetwokrDNSforTun(networkAgentInfo, mcwilltun0 == 1);
+//                                }
+//                                break;
+//                        }
+//                    }
+
+                    int user = UserHandle.getUserId(Binder.getCallingUid());
+                    isOpenVpn.set(wifitun0 == 1 || mobiletun0 == 1 || mcwilltun0 == 1);
+                    if (isOpenVpn.get()) {
+                        synchronized (mCootelVpns) {
+                            mCootelVpns.get(user).agentConnect();
+                        }
+                    }else{
+                        synchronized (mCootelVpns) {
+                            mCootelVpns.get(user).agentDisconnect();
+                        }
+                    }
+
+                    mobile_tun0_status = mobiletun0;
+                    wifi_tun0_status = wifitun0;
+                    mcwill_tun0_status = mcwilltun0;
+                    Slog.d(TAG, "tsylog set network dns finish");
+                }
+            }catch (Exception e){
+                e.printStackTrace();
+                Slog.e(TAG, "tsylog set network dns error!"+e.toString());
+            }
+        }
+
+        private void setNetwokrDNSforTun(NetworkAgentInfo networkAgentInfo, boolean isSetTun) {
+            try {
+                Slog.d(TAG,"tsylog setdns isSet="+isSetTun+" network="+networkAgentInfo.network.netId);
+                String domains = networkAgentInfo.linkProperties.getDomains();
+                mNetd.setDnsServersForNetwork(networkAgentInfo.network.netId, new String[]{}, domains);
+                String dns1 = SystemProperties.get("persist.sys.mag.dns", "172.16.251.77");
+                if (!isSetTun) {
+                    Collection<InetAddress> dnss = null;
+                    switch (networkAgentInfo.networkInfo.getType()){
+                        case ConnectivityManager.TYPE_MOBILE:
+                            dnss = mobile_default_dnss;
+                            break;
+                        case ConnectivityManager.TYPE_WIFI:
+                            dnss = wifi_default_dnss;
+                            break;
+                        case ConnectivityManager.TYPE_ETHERNET:
+                            dnss = mcwill_default_dnss;
+                            break;
+                    }
+                    if(dnss!=null&&dnss.size()>0) {
+                        mNetd.setDnsServersForNetwork(networkAgentInfo.network.netId, NetworkUtils.makeStrings(dnss), domains);
+                        if(SystemProperties.getBoolean(net_support_multi,false)) {
+                            networkAgentInfo.linkProperties.setDnsServers(dnss);
+                        }
+                        Slog.d(TAG, "tsylog set netwrok " + networkAgentInfo.network.netId + " dns " + dnss);
+                    }else{
+                        Slog.e(TAG,"tsylog reset network dns error! network id="+networkAgentInfo.network.netId);
+                    }
+                } else {
+                    mNetd.setDnsServersForNetwork(networkAgentInfo.network.netId, new String[]{dns1}, domains);
+                    Collection<InetAddress> dnss = new ArrayList<InetAddress>();
+                    dnss.add(InetAddress.getByName(dns1));
+                    if(SystemProperties.getBoolean(net_support_multi,false)) {
+                        networkAgentInfo.linkProperties.setDnsServers(dnss);
+                    }
+                    Slog.d(TAG,"tsylog set netwrok "+networkAgentInfo.network.netId+" dns "+dnss);
+                }
+            } catch (Exception e) {
+                Slog.e(TAG,"tsylog switch multi-stream, set tun dns failed!"+e.toString());
+                e.printStackTrace();
+            }
+        }
+    };
+    /**add by tangshiyuan 20191012开启多流关闭多流状态各网络DNS修改 end**/
 }

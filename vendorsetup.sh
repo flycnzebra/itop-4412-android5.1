@@ -1,7 +1,7 @@
 FLYZEBRA_ROOT=vendor/flyzebra
 
 #解压迅为文件
-tar -zxvf $FLYZEBRA_ROOT/itop4412_android5.1.tar.gz
+#tar -zxvf $FLYZEBRA_ROOT/itop4412_android5.1.tar.gz
 
 #init.rc
 cp -rvf $FLYZEBRA_ROOT/device ./
