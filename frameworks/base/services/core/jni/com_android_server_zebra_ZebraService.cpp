@@ -18,12 +18,10 @@ zebrahw_device_t* zebrahw_dev;
 
 static jint init_native(JNIEnv *env, jobject /* clazz */)
 {
+    ALOGI("ZebraService init_native()");
     int err;
     hw_module_t* module;
     zebrahw_device_t* dev = NULL;
-
-    //ALOGI("init_native()"); 
-
     err = hw_get_module(ZEBRAHW_HARDWARE_MODULE_ID, (hw_module_t const**)&module);
     if (err == 0) {
         if (module->methods->open(module, "", ((hw_device_t**) &dev)) != 0) {
@@ -31,7 +29,7 @@ static jint init_native(JNIEnv *env, jobject /* clazz */)
             return 0;
         }
     } else {
-        ALOGE("Can't get zebra module!!!");
+        ALOGE("Can't get zebra module!!! err=%d",err);
         return 0;
     }
 
@@ -41,15 +39,11 @@ static jint init_native(JNIEnv *env, jobject /* clazz */)
 static void finalize_native(JNIEnv *env, jobject /* clazz */, int ptr)
 {
     zebrahw_device_t* dev = (zebrahw_device_t*)ptr;
-
     //ALOGI("finalize_native()");
-
     if (dev == NULL) {
         return;
     }
-
     dev->close();
-
     free(dev);
 }
 
@@ -58,21 +52,14 @@ static int read_native(JNIEnv *env, jobject /* clazz */, int ptr, jbyteArray buf
     zebrahw_device_t* dev = (zebrahw_device_t*)ptr;
     jbyte* real_byte_array;
     int length;
-
     //ALOGI("read_native()");
-
     real_byte_array = env->GetByteArrayElements(buffer, NULL);
-
     if (dev == NULL) {
         return 0;
     }
-
     length = dev->read((char*) real_byte_array, env->GetArrayLength(buffer));
-
     ALOGI("read data from hal: %s", (char *)real_byte_array);
-
     env->ReleaseByteArrayElements(buffer, real_byte_array, 0);
-
     return length;
 }
 
@@ -81,21 +68,14 @@ static int write_native(JNIEnv *env, jobject /* clazz */, int ptr, jbyteArray bu
     zebrahw_device_t* dev = (zebrahw_device_t*)ptr;
     jbyte* real_byte_array;
     int length;
-
     //ALOGI("write_native()");
-
     real_byte_array = env->GetByteArrayElements(buffer, NULL);
-
     if (dev == NULL) {
         return 0;
     }
-
     length = dev->write((char*) real_byte_array, env->GetArrayLength(buffer));
-
     ALOGI("write data to hal: %s", (char *)real_byte_array);
-
     env->ReleaseByteArrayElements(buffer, real_byte_array, 0);
-
     return length;
 }
 
@@ -103,13 +83,10 @@ static int write_native(JNIEnv *env, jobject /* clazz */, int ptr, jbyteArray bu
 static int test_native(JNIEnv *env, jobject /* clazz */, int ptr, int value)
 {
     zebrahw_device_t* dev = (zebrahw_device_t*)ptr;
-
     if (dev == NULL) {
         return 0;
     }
-
     ALOGI("test_native()");
-
     return dev->test(value);
 }
 

@@ -9,6 +9,6 @@ LOCAL_LDLIBS += -llog
 LOCAL_C_INCLUDES := hardware/libhardware
 LOCAL_SHARED_LIBRARIES := liblog libcutils libhardware
 LOCAL_SRC_FILES := zebrahw_qemu.c
-LOCAL_MODULE := zebrahw.$(TARGET_BOARD_PLATFORM)
+LOCAL_MODULE := zebrahw.$(TARGET_BOOTLOADER_BOARD_NAME)
 LOCAL_MODULE_TAGS := optional
 include $(BUILD_SHARED_LIBRARY)

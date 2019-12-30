@@ -20,8 +20,12 @@ PRODUCT_COPY_FILES += vendor/flyzebra/system/lib/lib-mpd.so:system/lib/lib-mpd.s
 PRODUCT_PROPERTY_OVERRIDES += service.adb.tcp.port=5555
 
 # include product packages
-PRODUCT_PACKAGES += FileManager 
-PRODUCT_PACKAGES += FlyLauncher 
+#ZebraService
+PRODUCT_PACKAGES += zebrahw.itop4412
+
+PRODUCT_PACKAGES += FileManager
+PRODUCT_PACKAGES += FlyLauncher
+PRODUCT_PACKAGES += FlySystemUI
 #PRODUCT_PACKAGES += com.google.android.gsf
 #PRODUCT_PACKAGES += com.google.android.gms
 #PRODUCT_PACKAGES += com.android.vending

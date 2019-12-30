@@ -8,6 +8,8 @@ import android.os.Message;
 import android.os.Process;
 import android.util.Slog;
 import android.os.RemoteException;
+import android.content.Intent;
+import android.content.ComponentName;
 
 public class ZebraService extends IZebraService.Stub {
     private static final String TAG = "ZebraService";
@@ -18,10 +20,15 @@ public class ZebraService extends IZebraService.Stub {
         super();
         mContext = context;
         Slog.i(TAG, "Zebra Service started");
-
         mNativePointer = init_native();
-
         Slog.i(TAG, "test() returns " + test_native(mNativePointer, 20));
+
+        //OPEN MPAPP
+        Slog.i(TAG, "start mpapp MainService!");
+        Intent intent = new Intent();
+        ComponentName cn = new ComponentName("xinwei.com.mpapp", "xinwei.com.mpapp.MainService");
+        intent.setComponent(cn);
+        context.startService(intent);
     }
 
     protected void finalize() throws Throwable {
@@ -33,9 +40,7 @@ public class ZebraService extends IZebraService.Stub {
     {
         int length;
         byte[] buffer = new byte[maxLength];
-
         length = read_native(mNativePointer, buffer);
-
         try {
             return new String(buffer, 0, length, "UTF-8");
         } catch (Exception e) {

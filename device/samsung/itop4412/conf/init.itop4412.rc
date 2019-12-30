@@ -156,6 +156,6 @@ service iprenew_eth0 /system/bin/dhcpcd -n
     oneshot
 	
 # audio 
-tinymix 4 127
-tinymix 39 1
-tinymix 42 1
+#tinymix 4 127
+#tinymix 39 1
+#tinymix 42 1

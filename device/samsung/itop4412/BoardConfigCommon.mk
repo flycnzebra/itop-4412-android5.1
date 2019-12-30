@@ -1,0 +1,176 @@
+#
+# Copyright (C) 2014 The Android Open Source Project
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+# BoardConfigCommon.mk
+#
+# Product-specific compile-time definitions.
+#
+TARGET_BOARD_PLATFORM := exynos4
+TARGET_SOC := exynos4x12
+
+# CPU options
+TARGET_CPU_ABI := armeabi-v7a
+TARGET_CPU_ABI2 := armeabi
+TARGET_CPU_SMP := true
+TARGET_ARCH := arm
+TARGET_ARCH_VARIANT := armv7-a-neon
+TARGET_ARCH_VARIANT_CPU := cortex-a9
+TARGET_CPU_VARIANT := cortex-a9
+ARCH_ARM_HAVE_NEON := true
+ARCH_ARM_HAVE_TLS_REGISTER := true
+TARGET_GLOBAL_CFLAGS += -mtune=cortex-a9 -mfpu=neon -mfloat-abi=softfp
+TARGET_GLOBAL_CPPFLAGS += -mtune=cortex-a9 -mfpu=neon -mfloat-abi=softfp
+
+TARGET_NO_BOOTLOADER := true
+TARGET_NO_KERNEL := true
+TARGET_NO_RADIOIMAGE := true
+TARGET_BOOTLOADER_BOARD_NAME := itop4412
+
+TARGET_PROVIDES_INIT_RC := true
+TARGET_PROVIDES_INIT_TARGET_RC := true
+
+# Exynos4 support
+EXYNOS4X12_ENHANCEMENTS := true
+EXYNOS4_ENHANCEMENTS := true
+
+ifeq ($(EXYNOS4X12_ENHANCEMENTS),true)
+COMMON_GLOBAL_CFLAGS += -DEXYNOS4_ENHANCEMENTS=1
+COMMON_GLOBAL_CFLAGS += -DEXYNOS4X12_ENHANCEMENTS=1
+endif
+
+# Launcher
+BOARD_USES_LAUNCHER3 := true
+
+# Audio
+BOARD_USES_GENERIC_AUDIO := false
+BOARD_USES_I2S_AUDIO := true
+BOARD_USES_PCM_AUDIO := false
+BOARD_USES_SPDIF_AUDIO := false
+#BOARD_USES_ALSA_AUDIO := true
+#BUILD_WITH_ALSA_UTILS := true
+
+# ULP, ALP 
+#BOARD_USE_ULP_AUDIO := false
+USE_ULP_AUDIO := false
+BOARD_USE_ALP_AUDIO := true
+
+# Backlight
+BOARD_USES_PWMLIGHTS := true
+
+# Bluetooth
+#BOARD_HAVE_BLUETOOTH := true
+#BOARD_HAVE_BLUETOOTH_CSR := true
+#BOARD_HAVE_BLUETOOTH_BCM := false
+#BOARD_HAVE_SAMSUNG_BLUETOOTH := false
+#BOARD_BLUETOOTH_BDROID_BUILDCFG_INCLUDE_DIR := device/samsung/itop4412/bluetooth
+
+# Connectivity - Wi-Fi
+#WPA_SUPPLICANT_VERSION := VER_0_8_X
+#BOARD_WPA_SUPPLICANT_DRIVER := NL80211
+#BOARD_WPA_SUPPLICANT_PRIVATE_LIB := lib_driver_cmd_fawext
+#BOARD_WLAN_DEVICE := fawext
+
+BOARD_WIFI_VENDOR	:= MediaTek
+BOARD_CONNECTIVITY_VENDOR := MediaTek
+ifeq ($(strip $(BOARD_CONNECTIVITY_VENDOR)), MediaTek)
+BOARD_MEDIATEK_USES_GPS  := false
+BOARD_MEDIATEK_USES_FM  := false
+BOARD_CONNECTIVITY_MODULE := combo_mt66xx
+ifeq ($(strip $(BOARD_CONNECTIVITY_MODULE)), combo_mt66xx)
+combo_config :=  hardware/mediatek/config/$(strip $(BOARD_CONNECTIVITY_MODULE))/board_config.mk
+include  $(combo_config)
+endif
+endif
+
+# Filesystem
+TARGET_USERIMAGES_USE_EXT4 := true
+#BOARD_SYSTEMIMAGE_PARTITION_SIZE   := 629145600  # 600MB
+BOARD_SYSTEMIMAGE_PARTITION_SIZE   := 830472192  # 792MB
+BOARD_USERDATAIMAGE_PARTITION_SIZE := 830472192  # 792MB
+BOARD_CACHEIMAGE_PARTITION_SIZE    := 536870912  # 512MB
+BOARD_CACHEIMAGE_FILE_SYSTEM_TYPE := ext4
+BOARD_FLASH_BLOCK_SIZE := 4096
+
+# Graphics
+BOARD_USES_HGL := true
+BOARD_NO_32BPP := true
+BOARD_EGL_CFG := device/samsung/itop4412/conf/egl.cfg
+USE_OPENGL_RENDERER := true
+IGN_EGL_BUFFERCOUNT := true
+NUM_FRAMEBUFFER_SURFACE_BUFFERS := 3
+
+SCREEN_WIDTH := 800
+SCREEN_HEIGHT := 1280
+DEFAULT_FB_NUM := 0
+
+# FIMG Acceleration
+BOARD_USES_FIMGAPI := true
+BOARD_USES_SKIA_FIMGAPI := true
+BOARD_USES_SKIAHWJPEG := true
+COMMON_GLOBAL_CFLAGS += -DSEC_HWJPEG_G2D -DFORCE_SCREENSHOT_CPU_PATH
+
+# HWComposer
+BOARD_USES_HWCOMPOSER := true
+BOARD_USE_SYSFS_VSYNC_NOTIFICATION := true
+
+# TVOut & HDMI
+# BOARD_USE_SECTVOUT := true
+# BOARD_USES_SKTEXTBOX := true
+BOARD_USES_HDMI_SUBTITLES := true
+BOARD_USES_HDMI := true
+BOARD_HDMI_STD := STD_720P
+BOARD_HDMI_DDC_CH := DDC_CH_I2C_0
+BOARD_HDMI_ROTATE := false
+BOARD_USES_HDMI_EDID := true
+BOARD_USES_HDMI_JUMPER := false
+
+# Camera
+BOARD_CAMERA_HAVE_ISO := true
+COMMON_GLOBAL_CFLAGS += -DHAVE_ISO
+COMMON_GLOBAL_CFLAGS += -DSAMSUNG_CAMERA_HARDWARE
+COMMON_GLOBAL_CFLAGS += -DSAMSUNG_DVFS
+BOARD_USES_PROPRIETARY_LIBFIMC := true
+
+# SEC Camera
+USE_SEC_CAMERA := false
+CAMERA_USE_DIGITALZOOM := true
+# BOARD_USE_S5K3H2 := true
+
+# OMX
+BOARD_USE_SAMSUNG_COLORFORMAT := true
+BOARD_FIX_NATIVE_COLOR_FORMAT := true
+BOARD_NONBLOCK_MODE_PROCESS := true
+BOARD_USE_STOREMETADATA := true
+BOARD_USE_METADATABUFFERTYPE := true
+BOARD_USE_S3D_SUPPORT := true
+BOARD_USE_DRM := true
+BOARD_USE_CSC_FIMC := false
+BOARD_USE_H264_PREPEND_SPS_PPS := true
+
+BOARD_USES_MFC_FPS := false
+BOARD_USES_FFMPEG := false
+
+# V4L2 & ION
+BOARD_USE_V4L2 := false
+BOARD_USE_V4L2_ION := false
+BOARD_NO_OVERLAY := false
+
+# ZTE WIRELESS MODEM
+BOARD_HAVE_MODEM :=true
+BOARD_MODEM_VENDOR :=ZTE
+BOARD_MODEM_ID :=MF210
+BOARD_MODEM_HAVE_DATA_DEVICE :=true
+BOARD_WITH_CALL_FUNCTION:=false
