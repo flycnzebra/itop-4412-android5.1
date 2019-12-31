@@ -30,7 +30,8 @@ PRODUCT_PACKAGES += com.google.android.gsf
 PRODUCT_PACKAGES += com.google.android.gms
 PRODUCT_PACKAGES += com.android.vending
 PRODUCT_PACKAGES += com.android.chrome
-PRODUCT_PACKAGES += NewMpApp
-PRODUCT_PACKAGES += ratd 
 PRODUCT_PACKAGES += GaodemapAuto 
 PRODUCT_PACKAGES += BaidumapAuto 
+
+PRODUCT_PACKAGES += NewMpApp
+PRODUCT_PACKAGES += ratd 

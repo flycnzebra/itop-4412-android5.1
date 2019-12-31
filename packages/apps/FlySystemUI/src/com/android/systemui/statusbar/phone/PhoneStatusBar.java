@@ -653,6 +653,11 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
         mStatusBarView = (PhoneStatusBarView) mStatusBarWindow.findViewById(R.id.status_bar);
         mStatusBarView.setBar(this);
         mStatusBarView.setBackgroundResource(R.drawable.jac_statusbar_background);
+        ImageView mRecent = (ImageView) mStatusBarView.findViewById(R.id.recent_apps);
+        mRecent.setOnClickListener(mRecentsClickListener);
+        mRecent.setOnTouchListener(mRecentsPreloadOnTouchListener);
+        mRecent.setLongClickable(true);
+        mRecent.setOnLongClickListener(mLongPressBackRecentsListener);
 
         PanelHolder holder = (PanelHolder) mStatusBarWindow.findViewById(R.id.panel_holder);
         mStatusBarView.setPanelHolder(holder);
