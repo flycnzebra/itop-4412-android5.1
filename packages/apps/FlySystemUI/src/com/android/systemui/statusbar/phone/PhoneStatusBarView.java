@@ -17,12 +17,15 @@
 package com.android.systemui.statusbar.phone;
 
 import android.content.Context;
+import android.content.ComponentName;
+import android.content.Intent;
 import android.content.res.Resources;
 import android.util.AttributeSet;
 import android.util.EventLog;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.accessibility.AccessibilityEvent;
+import android.widget.ImageView;
 
 import com.android.systemui.EventLogTags;
 import com.android.systemui.R;
@@ -38,6 +41,8 @@ public class PhoneStatusBarView extends PanelBar {
     PanelView mNotificationPanel;
     private final PhoneStatusBarTransitions mBarTransitions;
     private ScrimController mScrimController;
+
+    private ImageView mRecent;
 
     public PhoneStatusBarView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -61,6 +66,20 @@ public class PhoneStatusBarView extends PanelBar {
     @Override
     public void onFinishInflate() {
         mBarTransitions.init();
+        mRecent = (ImageView) findViewById(R.id.recent_apps007);
+        mRecent.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                try {
+                    ComponentName recents = new ComponentName("com.android.systemui","com.android.systemui.recents.RecentsActivity");
+                    Intent intent = new Intent();
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    intent.setComponent(recents);
+                    getContext().startActivity(intent);
+                } catch (Exception e) {
+                }
+            }
+        });
     }
 
     @Override

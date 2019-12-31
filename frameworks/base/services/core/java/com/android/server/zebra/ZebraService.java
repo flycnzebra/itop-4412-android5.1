@@ -22,13 +22,6 @@ public class ZebraService extends IZebraService.Stub {
         Slog.i(TAG, "Zebra Service started");
         mNativePointer = init_native();
         Slog.i(TAG, "test() returns " + test_native(mNativePointer, 20));
-
-        //OPEN MPAPP
-        Slog.i(TAG, "start mpapp MainService!");
-        Intent intent = new Intent();
-        ComponentName cn = new ComponentName("xinwei.com.mpapp", "xinwei.com.mpapp.MainService");
-        intent.setComponent(cn);
-        context.startService(intent);
     }
 
     protected void finalize() throws Throwable {

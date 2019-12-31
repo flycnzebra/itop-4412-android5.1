@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
 /* apps/common/assets/default/default/skins/StatusBar.xml
 **
 ** Copyright 2006, The Android Open Source Project
@@ -19,15 +18,13 @@
 -->
 
 <!--    android:background="@drawable/status_bar_closed_default_background" -->
-<com.android.systemui.statusbar.phone.PhoneStatusBarView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<com.android.systemui.statusbar.phone.PhoneStatusBarView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:systemui="http://schemas.android.com/apk/res/com.android.systemui"
     android:id="@+id/status_bar"
-    android:background="@drawable/system_bar_background"
-    android:orientation="vertical"
-    android:focusable="true"
+    android:background="@drawable/jac_statusbar_background"
     android:descendantFocusability="afterDescendants"
-    >
+    android:focusable="true"
+    android:orientation="vertical">
 
     <ImageView
         android:id="@+id/notification_lights_out"
@@ -35,74 +32,99 @@
         android:layout_height="match_parent"
         android:paddingStart="6dip"
         android:paddingBottom="2dip"
-        android:src="@drawable/ic_sysbar_lights_out_dot_small"
         android:scaleType="center"
-        android:visibility="gone"
-        />
+        android:src="@drawable/ic_sysbar_lights_out_dot_small"
+        android:visibility="gone" />
 
-    <LinearLayout android:id="@+id/status_bar_contents"
+    <LinearLayout
+        android:id="@+id/status_bar_contents"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:paddingStart="6dp"
-        android:paddingEnd="8dp"
         android:orientation="horizontal"
-        >
+        android:paddingStart="6dp"
+        android:paddingEnd="8dp">
+
+        <com.android.systemui.statusbar.policy.KeyButtonView
+            android:id="@+id/home"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:contentDescription="@string/accessibility_home"
+            android:scaleType="centerCrop"
+            android:src="@drawable/jancar_home"
+            systemui:keyCode="3"
+            systemui:keyRepeat="false" />
 
         <com.android.systemui.statusbar.AlphaOptimizedFrameLayout
             android:id="@+id/notification_icon_area"
             android:layout_width="0dip"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:orientation="horizontal"
-            >
+            android:orientation="horizontal">
             <!-- The alpha of this area is both controlled from PhoneStatusBarTransitions and
                  PhoneStatusBar (DISABLE_NOTIFICATION_ICONS), so we need two views here. -->
             <com.android.keyguard.AlphaOptimizedLinearLayout
                 android:id="@+id/notification_icon_area_inner"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                >
-                <com.android.systemui.statusbar.StatusBarIconView android:id="@+id/moreIcon"
+                android:layout_height="match_parent">
+
+                <com.android.systemui.statusbar.StatusBarIconView
+                    android:id="@+id/moreIcon"
                     android:layout_width="@dimen/status_bar_icon_size"
                     android:layout_height="match_parent"
                     android:src="@drawable/stat_notify_more"
-                    android:visibility="gone"
-                    />
-                <com.android.systemui.statusbar.phone.IconMerger android:id="@+id/notificationIcons"
+                    android:visibility="gone" />
+
+                <com.android.systemui.statusbar.phone.IconMerger
+                    android:id="@+id/notificationIcons"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_alignParentStart="true"
                     android:gravity="center_vertical"
-                    android:orientation="horizontal"/>
+                    android:orientation="horizontal" />
             </com.android.keyguard.AlphaOptimizedLinearLayout>
         </com.android.systemui.statusbar.AlphaOptimizedFrameLayout>
 
-        <com.android.keyguard.AlphaOptimizedLinearLayout android:id="@+id/system_icon_area"
+        <com.android.keyguard.AlphaOptimizedLinearLayout
+            android:id="@+id/system_icon_area"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:orientation="horizontal"
-            >
+            android:orientation="horizontal">
 
             <include layout="@layout/system_icons" />
 
             <com.android.systemui.statusbar.policy.Clock
                 android:id="@+id/clock"
-                android:textAppearance="@style/TextAppearance.StatusBar.Clock"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:singleLine="true"
-                android:paddingStart="7dp"
                 android:gravity="center_vertical|start"
-                />
+                android:paddingStart="7dp"
+                android:singleLine="true"
+                android:textAppearance="@style/TextAppearance.StatusBar.Clock" />
         </com.android.keyguard.AlphaOptimizedLinearLayout>
+
+        <com.android.systemui.statusbar.policy.KeyButtonView
+            android:id="@+id/recent_apps007"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:contentDescription="@string/accessibility_recent"
+            android:scaleType="centerCrop"
+            android:src="@drawable/jac_sbt_bake_recent_01"/>
+
+        <com.android.systemui.statusbar.policy.KeyButtonView
+            android:id="@+id/back"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:contentDescription="@string/accessibility_back"
+            android:scaleType="centerCrop"
+            android:src="@drawable/jancar_back"
+            systemui:keyCode="4" />
     </LinearLayout>
 
     <ViewStub
         android:id="@+id/ticker_stub"
-        android:inflatedId="@+id/ticker"
-        android:layout="@layout/status_bar_ticker"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        />
+        android:inflatedId="@+id/ticker"
+        android:layout="@layout/status_bar_ticker" />
 
 </com.android.systemui.statusbar.phone.PhoneStatusBarView>
