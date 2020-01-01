@@ -8,12 +8,11 @@ import android.util.Slog;
 public class ZebraManager
 {
     private static final String TAG = "ZebraManager";
-
     public String read(int maxLength) {
         try {
             return mService.read(maxLength);
         } catch (RemoteException e) {
-            Slog.e(TAG, "read error!");
+            FlyLog.ee(TAG, "read error!");
             return null;
         }
     }
@@ -22,7 +21,7 @@ public class ZebraManager
         try {
             return mService.write(mString);
         } catch (RemoteException e) {
-            Slog.e(TAG, "write error!");
+            FlyLog.ee(TAG, "write error!");
             return 0;
         }    
     }
