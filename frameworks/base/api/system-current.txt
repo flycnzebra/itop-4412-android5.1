@@ -41725,6 +41725,18 @@ package android.widget {
 
 package android.zebra {
 
+  public class FlyLog {
+    ctor public FlyLog();
+    method public static void d();
+    method public static void d(java.lang.String, java.lang.Object...);
+    method public static void e(java.lang.String, java.lang.Object...);
+    method public static void i(java.lang.String, java.lang.Object...);
+    method public static void v(java.lang.String, java.lang.Object...);
+    method public static void w(java.lang.String, java.lang.Object...);
+    field public static final java.lang.String TAG = "ZEBRA-SYS";
+    field public static java.lang.String[] filter;
+  }
+
   public abstract interface IZebraService implements android.os.IInterface {
     method public abstract int write(java.lang.String) throws android.os.RemoteException;
   }

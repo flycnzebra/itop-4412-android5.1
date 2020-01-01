@@ -19,6 +19,7 @@ package com.android.systemui.recents.views;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapShader;
@@ -30,9 +31,11 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.Shader;
+import android.os.Build;
 import android.os.SystemProperties;
 import android.util.AttributeSet;
 import android.view.View;
+
 import com.android.systemui.recents.RecentsConfiguration;
 import com.android.systemui.recents.misc.Utilities;
 import com.android.systemui.recents.model.Task;
@@ -122,11 +125,13 @@ public class TaskViewThumbnail extends View {
                 mConfig.taskViewRoundedCornerRadiusPx, mDrawPaint);
     }
 
-    /** Sets the thumbnail to a given bitmap. */
+    /**
+     * Sets the thumbnail to a given bitmap.
+     */
     void setThumbnail(Bitmap bm) {
         if (bm != null) {
-            mBitmapShader = new BitmapShader(bm, Shader.TileMode.CLAMP,
-                    Shader.TileMode.CLAMP);
+            animate().rotation(360 - SystemProperties.getInt("ro.sf.hwrotation", 0)).setDuration(0).start();
+            mBitmapShader = new BitmapShader(bm, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP);
             mDrawPaint.setShader(mBitmapShader);
             mBitmapRect.set(0, 0, bm.getWidth(), bm.getHeight());
             updateThumbnailScale();
@@ -137,7 +142,9 @@ public class TaskViewThumbnail extends View {
         updateThumbnailPaintFilter();
     }
 
-    /** Updates the paint to draw the thumbnail. */
+    /**
+     * Updates the paint to draw the thumbnail.
+     */
     void updateThumbnailPaintFilter() {
         if (mInvisible) {
             return;
@@ -157,7 +164,9 @@ public class TaskViewThumbnail extends View {
         invalidate();
     }
 
-    /** Updates the thumbnail shader's scale transform. */
+    /**
+     * Updates the thumbnail shader's scale transform.
+     */
     void updateThumbnailScale() {
         if (mBitmapShader != null) {
             mScaleMatrix.setRectToRect(mBitmapRect, mLayoutRect, Matrix.ScaleToFit.FILL);
@@ -165,7 +174,9 @@ public class TaskViewThumbnail extends View {
         }
     }
 
-    /** Updates the clip rect based on the given task bar. */
+    /**
+     * Updates the clip rect based on the given task bar.
+     */
     void updateClipToTaskBar(View taskBar) {
         mTaskBar = taskBar;
         int top = (int) Math.max(0, taskBar.getTranslationY() +
@@ -174,7 +185,9 @@ public class TaskViewThumbnail extends View {
         setClipBounds(mClipRect);
     }
 
-    /** Updates the visibility of the the thumbnail. */
+    /**
+     * Updates the visibility of the the thumbnail.
+     */
     void updateThumbnailVisibility(int clipBottom) {
         boolean invisible = mTaskBar != null && (getHeight() - clipBottom) <= mTaskBar.getHeight();
         if (invisible != mInvisible) {
@@ -195,7 +208,9 @@ public class TaskViewThumbnail extends View {
         updateThumbnailPaintFilter();
     }
 
-    /** Binds the thumbnail view to the task */
+    /**
+     * Binds the thumbnail view to the task
+     */
     void rebindToTask(Task t) {
         if (t.thumbnail != null) {
             setThumbnail(t.thumbnail);
@@ -204,12 +219,16 @@ public class TaskViewThumbnail extends View {
         }
     }
 
-    /** Unbinds the thumbnail view from the task */
+    /**
+     * Unbinds the thumbnail view from the task
+     */
     void unbindFromTask() {
         setThumbnail(null);
     }
 
-    /** Handles focus changes. */
+    /**
+     * Handles focus changes.
+     */
     void onFocusChanged(boolean focused) {
         if (focused) {
             if (Float.compare(getAlpha(), 1f) != 0) {
@@ -235,18 +254,24 @@ public class TaskViewThumbnail extends View {
         updateThumbnailPaintFilter();
     }
 
-    /** Animates this task thumbnail as it enters Recents. */
+    /**
+     * Animates this task thumbnail as it enters Recents.
+     */
     void startEnterRecentsAnimation(int delay, Runnable postAnimRunnable) {
         startFadeAnimation(mConfig.taskViewThumbnailAlpha, delay,
                 mConfig.taskViewEnterFromAppDuration, postAnimRunnable);
     }
 
-    /** Animates this task thumbnail as it exits Recents. */
+    /**
+     * Animates this task thumbnail as it exits Recents.
+     */
     void startLaunchTaskAnimation(Runnable postAnimRunnable) {
         startFadeAnimation(1f, 0, mConfig.taskViewExitToAppDuration, postAnimRunnable);
     }
 
-    /** Starts a new thumbnail alpha animation. */
+    /**
+     * Starts a new thumbnail alpha animation.
+     */
     void startFadeAnimation(float finalAlpha, int delay, int duration, final Runnable postAnimRunnable) {
         Utilities.cancelAnimationWithoutCallbacks(mThumbnailAlphaAnimator);
         mThumbnailAlphaAnimator = ValueAnimator.ofFloat(mThumbnailAlpha, finalAlpha);
@@ -263,5 +288,28 @@ public class TaskViewThumbnail extends View {
             });
         }
         mThumbnailAlphaAnimator.start();
+    }
+
+    Bitmap adjustPhotoRotation(Bitmap bitmap, int orientationDegree) {
+        Matrix matrix = new Matrix();
+        matrix.setRotate(orientationDegree, (float) bitmap.getWidth() / 2, (float) bitmap.getHeight() / 2);
+        float targetX, targetY;
+        if (orientationDegree == 90) {
+            targetX = bitmap.getHeight();
+            targetY = 0;
+        } else {
+            targetX = bitmap.getHeight();
+            targetY = bitmap.getWidth();
+        }
+        final float[] values = new float[9];
+        matrix.getValues(values);
+        float x1 = values[Matrix.MTRANS_X];
+        float y1 = values[Matrix.MTRANS_Y];
+        matrix.postTranslate(targetX - x1, targetY - y1);
+        Bitmap canvasBitmap = Bitmap.createBitmap(bitmap.getHeight(), bitmap.getWidth(), Bitmap.Config.RGB_565);
+        Paint paint = new Paint();
+        Canvas canvas = new Canvas(canvasBitmap);
+        canvas.drawBitmap(bitmap, matrix, paint);
+        return canvasBitmap;
     }
 }
