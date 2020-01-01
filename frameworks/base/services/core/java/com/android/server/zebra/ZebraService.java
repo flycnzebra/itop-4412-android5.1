@@ -1,16 +1,13 @@
 package com.android.server.zebra;
 
 import android.content.Context;
-import android.os.Handler;
-import android.zebra.IZebraService;
-import android.os.Looper;
-import android.os.Message;
-import android.os.Process;
-import android.util.Slog;
 import android.os.RemoteException;
-import android.content.Intent;
-import android.content.ComponentName;
+import android.util.Slog;
+import android.zebra.IZebraService;
 
+/**
+ * @hide
+ */
 public class ZebraService extends IZebraService.Stub {
     private static final String TAG = "ZebraService";
     private Context mContext;
