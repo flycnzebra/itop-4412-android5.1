@@ -543,6 +543,12 @@ service netd /system/bin/netd
     socket mdns stream 0660 root system
     socket fwmarkd stream 0660 root inet
 
+service vlte /system/bin/vlte
+    class main
+    user root
+    group root system
+    socket vlte stream 0660 root system
+
 service debuggerd /system/bin/debuggerd
     class main
 
